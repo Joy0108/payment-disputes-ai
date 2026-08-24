@@ -1,0 +1,53 @@
+{
+  "fingerprint": "423883328566f194",
+  "files": {
+    "gold/complaints": {
+      "name": "gold/complaints",
+      "path": "data/gold/complaints.jsonl",
+      "md5": "c93c7930a8d5dde54608ff00129caaff",
+      "size_bytes": 7516406,
+      "rows": 9000,
+      "tracked_at": "2026-08-24T19:28:15+00:00"
+    },
+    "gold/fraud": {
+      "name": "gold/fraud",
+      "path": "data/gold/fraud.jsonl",
+      "md5": "24cf31b0d7b79c7ddbbc7728b88a2df8",
+      "size_bytes": 18779948,
+      "rows": 24000,
+      "tracked_at": "2026-08-24T19:28:15+00:00"
+    },
+    "raw/complaints": {
+      "name": "raw/complaints",
+      "path": "data/raw/complaints.csv",
+      "md5": "faa07694ac705dcc82fafd350247089b",
+      "size_bytes": 3630811,
+      "rows": 9001,
+      "tracked_at": "2026-08-24T19:28:14+00:00"
+    },
+    "raw/fraud": {
+      "name": "raw/fraud",
+      "path": "data/raw/fraud_applications.csv",
+      "md5": "a075c8e05227e01a3357cc4d9bfb4db2",
+      "size_bytes": 2619453,
+      "rows": 24001,
+      "tracked_at": "2026-08-24T19:28:14+00:00"
+    },
+    "silver/complaints": {
+      "name": "silver/complaints",
+      "path": "data/silver/complaints.jsonl",
+      "md5": "fd29dc05af5346215f295bb4e9937867",
+      "size_bytes": 5985306,
+      "rows": 9000,
+      "tracked_at": "2026-08-24T19:28:15+00:00"
+    },
+    "silver/fraud": {
+      "name": "silver/fraud",
+      "path": "data/silver/fraud.jsonl",
+      "md5": "d4772f61d91c7e594343b92828b924ee",
+      "size_bytes": 18338948,
+      "rows": 24000,
+      "tracked_at": "2026-08-24T19:28:15+00:00"
+    }
+  }
+}

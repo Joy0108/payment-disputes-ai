@@ -1,0 +1,193 @@
+{
+  "note": "Section-level extracts pulled the way the eCFR API serves them: one record per section or paragraph, with the citation preserved. Text is condensed for length; every citation resolves to a real provision.",
+  "retrieved_at": "2024-07-15",
+  "sources": {
+    "REG_E": "12 CFR Part 1005 - Electronic Fund Transfers (Regulation E)",
+    "REG_Z": "12 CFR Part 1026 - Truth in Lending (Regulation Z)",
+    "FCRA": "15 U.S.C. 1681 - Fair Credit Reporting Act",
+    "FDCPA": "15 U.S.C. 1692 - Fair Debt Collection Practices Act",
+    "CIRCULAR": "CFPB Consumer Financial Protection Circulars"
+  },
+  "sections": [
+    {
+      "id": "1005.6(b)",
+      "regulation": "REG_E",
+      "title": "Limitations on amount of liability for unauthorized transfers",
+      "text": "A consumer's liability for an unauthorized electronic fund transfer is determined by when the consumer notifies the institution. If the consumer notifies within two business days after learning of the loss or theft of an access device, liability is the lesser of $50 or the amount of unauthorized transfers occurring before notice. If the consumer fails to notify within two business days, liability may extend to the lesser of $500 or the sum of $50 or the amount of unauthorized transfers occurring in the first two business days plus the amount occurring after those two business days and before notice. A consumer who fails to report an unauthorized transfer appearing on a periodic statement within 60 days of transmittal may face unlimited liability for transfers occurring after that 60-day period and before notice."
+    },
+    {
+      "id": "1005.6(b)(3)",
+      "regulation": "REG_E",
+      "title": "Periodic statement; unauthorized transfer not involving an access device",
+      "text": "A consumer must report an unauthorized electronic fund transfer that appears on a periodic statement within 60 days of the financial institution's transmittal of the statement to avoid liability for subsequent transfers. If the consumer establishes that extenuating circumstances, such as extended travel or hospitalization, prevented timely notice, the time period must be extended to a reasonable period."
+    },
+    {
+      "id": "1005.11(b)",
+      "regulation": "REG_E",
+      "title": "Notice of error from consumer; timing and content",
+      "text": "A financial institution must comply with the error resolution requirements when it receives an oral or written notice from the consumer that is received no later than 60 days after the institution sends the periodic statement or provides the passbook documentation on which the alleged error is first reflected. The notice must enable the institution to identify the consumer's name and account number, and must indicate why the consumer believes an error exists and, to the extent possible, the type, date and amount of the error."
+    },
+    {
+      "id": "1005.11(c)(1)",
+      "regulation": "REG_E",
+      "title": "Time limits and extent of investigation; ten business days",
+      "text": "A financial institution shall investigate promptly and, except as otherwise provided, shall determine whether an error occurred within 10 business days of receiving a notice of error. The institution shall report the results to the consumer within three business days after completing its investigation. It shall correct the error within one business day after determining that an error occurred."
+    },
+    {
+      "id": "1005.11(c)(2)",
+      "regulation": "REG_E",
+      "title": "Extension of time limits; provisional credit",
+      "text": "If the financial institution is unable to complete its investigation within 10 business days, it may take up to 45 days from receipt of the notice of error to investigate, provided that it provisionally credits the consumer's account for the amount of the alleged error, including interest where applicable, within 10 business days of receiving the notice of error, and informs the consumer within two business days of the provisional crediting of the amount and date of the provisional credit and gives the consumer full use of the funds during the investigation."
+    },
+    {
+      "id": "1005.11(c)(3)",
+      "regulation": "REG_E",
+      "title": "Extension for new accounts, point-of-sale and foreign-initiated transfers",
+      "text": "For a notice of error involving an electronic fund transfer to or from an account within 30 days after the first deposit to the account was made, the institution may take up to 20 business days rather than 10 to determine whether an error occurred, and may take up to 90 days rather than 45 to investigate if it provisionally credits the account. The 90-day period also applies to a notice of error involving a transfer resulting from a point-of-sale debit card transaction, or a transfer initiated outside the United States."
+    },
+    {
+      "id": "1005.11(d)",
+      "regulation": "REG_E",
+      "title": "Procedures if the institution determines no error or a different error occurred",
+      "text": "If the financial institution determines that no error occurred, or that an error occurred in a manner or amount different from that described by the consumer, it shall deliver or mail an explanation of its findings within three business days after concluding the investigation, and shall note the consumer's right to request the documents the institution relied on in making its determination. Upon debiting a provisionally credited amount, the institution shall notify the consumer of the date and amount of the debit, and that it will honour checks and preauthorised transfers for five business days after the notification."
+    },
+    {
+      "id": "1005.11(e)",
+      "regulation": "REG_E",
+      "title": "Reassertion of error",
+      "text": "A financial institution that has fully complied with the error resolution requirements has no further responsibilities should the consumer later reassert the same error, except in the case of an error asserted by the consumer following receipt of information provided under the documentation request."
+    },
+    {
+      "id": "1005.10(b)",
+      "regulation": "REG_E",
+      "title": "Preauthorized transfers from consumer's account; written authorization",
+      "text": "Preauthorized electronic fund transfers from a consumer's account may be authorized only by a writing signed or similarly authenticated by the consumer. The person that obtains the authorization shall provide a copy to the consumer. A consumer may stop payment of a preauthorized transfer by notifying the financial institution orally or in writing at least three business days before the scheduled date of the transfer."
+    },
+    {
+      "id": "1005.18(e)",
+      "regulation": "REG_E",
+      "title": "Prepaid accounts; modified error resolution and limitations on liability",
+      "text": "For prepaid accounts, a financial institution is not required to comply with the liability limits and error resolution requirements for any prepaid account for which it has not successfully completed its consumer identification and verification process. Where the institution has completed verification, the error resolution timing requirements apply as they do to other accounts, and the institution must either provisionally credit the account within the applicable period or complete its investigation within the shorter period."
+    },
+    {
+      "id": "1026.13(a)",
+      "regulation": "REG_Z",
+      "title": "Billing error; definition",
+      "text": "A billing error includes a reflection on or with a periodic statement of an extension of credit that is not made to the consumer or to a person who has actual, implied or apparent authority to use the consumer's credit card; an extension of credit that is not identified in accordance with the identification requirements; an extension of credit for property or services not accepted by the consumer or not delivered as agreed; a computational or accounting error; a reflection of a payment or credit not properly credited; and a failure to transmit the periodic statement to the consumer's last known address."
+    },
+    {
+      "id": "1026.13(b)",
+      "regulation": "REG_Z",
+      "title": "Billing error notice; timing",
+      "text": "A billing error notice is a written notice from a consumer that is received by a creditor at the address disclosed for billing inquiries no later than 60 days after the creditor transmitted the first periodic statement that reflects the alleged billing error, enables the creditor to identify the consumer's name and account number, and to the extent possible indicates the consumer's belief and the reasons for the belief that a billing error exists and the type, date and amount of the error."
+    },
+    {
+      "id": "1026.13(c)(1)",
+      "regulation": "REG_Z",
+      "title": "Time for resolution; acknowledgement",
+      "text": "A creditor shall mail or deliver written acknowledgement to the consumer within 30 days of receiving a billing error notice, unless the creditor has complied with the appropriate resolution procedures within that 30-day period."
+    },
+    {
+      "id": "1026.13(c)(2)",
+      "regulation": "REG_Z",
+      "title": "Time for resolution; two complete billing cycles",
+      "text": "A creditor shall comply with the appropriate resolution procedures within two complete billing cycles, but in no event later than 90 days, after receiving a billing error notice. The creditor may not try to collect any disputed amount during that period, and may not restrict or close an account solely because the consumer has exercised billing error rights in good faith."
+    },
+    {
+      "id": "1026.13(d)",
+      "regulation": "REG_Z",
+      "title": "Rules pending resolution",
+      "text": "Until a billing error is resolved, the consumer need not pay, and the creditor may not try to collect, any portion of any required payment that the consumer believes is related to the disputed amount. The creditor may not make or threaten to make an adverse report to any person about the consumer's credit standing, or report that an amount is delinquent, because the consumer failed to pay the disputed amount. The creditor may, however, reflect the disputed amount and related finance charges on periodic statements and may accrue finance charges on the disputed amount."
+    },
+    {
+      "id": "1026.12(b)",
+      "regulation": "REG_Z",
+      "title": "Liability of cardholder for unauthorized use",
+      "text": "The liability of a cardholder for unauthorized use of a credit card shall not exceed the lesser of $50 or the amount of money, property, labor or services obtained by the unauthorized use before notification to the card issuer. The card issuer bears the burden of proving that the use was authorized, or, if the use was unauthorized, that the conditions of liability have been met."
+    },
+    {
+      "id": "1026.12(c)",
+      "regulation": "REG_Z",
+      "title": "Right of cardholder to assert claims and defenses against the card issuer",
+      "text": "When a person who honors a credit card fails to resolve satisfactorily a dispute as to property or services purchased with the credit card, the cardholder may assert against the card issuer all claims other than tort claims arising from the transaction. The cardholder must have made a good faith attempt to resolve the dispute with the merchant, and the amount of the disputed transaction must exceed $50 and the transaction must have occurred in the same state as the cardholder's billing address or within 100 miles of it, unless the merchant is controlled by or affiliated with the card issuer."
+    },
+    {
+      "id": "1681i(a)(1)",
+      "regulation": "FCRA",
+      "title": "Reinvestigation of disputed information; thirty days",
+      "text": "If the completeness or accuracy of any item of information contained in a consumer's file is disputed by the consumer and the consumer notifies the agency directly, or indirectly through a reseller, the agency shall, free of charge, conduct a reasonable reinvestigation to determine whether the disputed information is inaccurate and record the current status of the disputed information, or delete the item from the file, before the end of the 30-day period beginning on the date on which the agency receives the notice. The period may be extended to 45 days if the consumer provides additional relevant information during the 30-day period."
+    },
+    {
+      "id": "1681i(a)(5)",
+      "regulation": "FCRA",
+      "title": "Treatment of inaccurate or unverifiable information",
+      "text": "If, after any reinvestigation, an item of the information is found to be inaccurate or incomplete or cannot be verified, the consumer reporting agency shall promptly delete that item of information from the consumer's file or modify it, and shall promptly notify the furnisher that the information has been modified or deleted. The agency may not reinsert the item into the file unless the furnisher certifies that the information is complete and accurate, and shall notify the consumer of the reinsertion within five business days."
+    },
+    {
+      "id": "1681s-2(b)",
+      "regulation": "FCRA",
+      "title": "Duties of furnishers upon notice of dispute",
+      "text": "After receiving notice of a dispute from a consumer reporting agency, a furnisher shall conduct an investigation with respect to the disputed information, review all relevant information provided by the agency, report the results of the investigation to the agency, and if the investigation finds the information is incomplete or inaccurate, report those results to all other consumer reporting agencies to which the furnisher provided the information. The furnisher must complete these steps within the period the agency has to complete its own reinvestigation."
+    },
+    {
+      "id": "1681m(a)",
+      "regulation": "FCRA",
+      "title": "Adverse action based on information contained in a consumer report",
+      "text": "If any person takes any adverse action with respect to a consumer that is based in whole or in part on any information contained in a consumer report, the person shall provide oral, written or electronic notice of the adverse action to the consumer, provide the name, address and telephone number of the consumer reporting agency that furnished the report, and provide notice of the consumer's right to obtain a free copy of the report within 60 days and to dispute with the agency the accuracy or completeness of any information in the report."
+    },
+    {
+      "id": "1681b(f)",
+      "regulation": "FCRA",
+      "title": "Permissible purpose; certification",
+      "text": "A person shall not use or obtain a consumer report for any purpose unless the report is obtained for a purpose for which the report is authorized to be furnished, and the purpose is certified in accordance with the requirements to the consumer reporting agency by a prospective user of the report. Obtaining a report without a permissible purpose is a violation regardless of whether any adverse action follows."
+    },
+    {
+      "id": "1692g(a)",
+      "regulation": "FDCPA",
+      "title": "Validation of debts; notice within five days",
+      "text": "Within five days after the initial communication with a consumer in connection with the collection of any debt, a debt collector shall send the consumer a written notice containing the amount of the debt, the name of the creditor to whom the debt is owed, a statement that unless the consumer disputes the validity of the debt within 30 days the debt will be assumed valid, a statement that if the consumer notifies the collector in writing within the 30-day period that the debt is disputed the collector will obtain verification and mail it to the consumer, and a statement that upon written request within the 30-day period the collector will provide the name and address of the original creditor if different from the current creditor."
+    },
+    {
+      "id": "1692g(b)",
+      "regulation": "FDCPA",
+      "title": "Disputed debts; cessation of collection",
+      "text": "If the consumer notifies the debt collector in writing within the 30-day period that the debt or any portion of it is disputed, or requests the name and address of the original creditor, the debt collector shall cease collection of the debt until the collector obtains verification of the debt or a copy of a judgment, or the name and address of the original creditor, and mails a copy to the consumer. Collection activities that occur during the 30-day period may not overshadow or be inconsistent with the disclosure of the consumer's right to dispute."
+    },
+    {
+      "id": "1692c(a)",
+      "regulation": "FDCPA",
+      "title": "Communication with the consumer generally",
+      "text": "Without the prior consent of the consumer given directly to the debt collector or the express permission of a court, a debt collector may not communicate with a consumer in connection with the collection of any debt at any unusual time or place, and in the absence of knowledge of circumstances to the contrary a debt collector shall assume that the convenient time for communicating with a consumer is after 8 o'clock antemeridian and before 9 o'clock postmeridian local time at the consumer's location; if the collector knows the consumer is represented by an attorney; or at the consumer's place of employment if the collector knows the employer prohibits such communication."
+    },
+    {
+      "id": "1692d",
+      "regulation": "FDCPA",
+      "title": "Harassment or abuse",
+      "text": "A debt collector may not engage in any conduct the natural consequence of which is to harass, oppress or abuse any person in connection with the collection of a debt. This includes the use or threat of violence, the use of obscene language, causing a telephone to ring or engaging any person in telephone conversation repeatedly or continuously with intent to annoy, abuse or harass, and the placement of telephone calls without meaningful disclosure of the caller's identity."
+    },
+    {
+      "id": "1692e",
+      "regulation": "FDCPA",
+      "title": "False or misleading representations",
+      "text": "A debt collector may not use any false, deceptive or misleading representation or means in connection with the collection of any debt, including the false representation of the character, amount or legal status of any debt, the threat to take any action that cannot legally be taken or that is not intended to be taken, and the false representation or implication that nonpayment will result in arrest or seizure of property unless such action is lawful and the collector intends to take it."
+    },
+    {
+      "id": "CIRCULAR-2022-04",
+      "regulation": "CIRCULAR",
+      "title": "Consumer Financial Protection Circular 2022-04: insufficient data protection as an unfair practice",
+      "text": "Inadequate security for sensitive consumer information can constitute an unfair act or practice. Practices the Bureau has identified as likely to be relied upon in an unfairness finding include the failure to use multi-factor authentication, the failure to have adequate password management policies, and the failure to keep software updated. A finding of unfairness does not require a breach to have occurred where the practice causes or is likely to cause substantial injury that consumers cannot reasonably avoid and that is not outweighed by countervailing benefits."
+    },
+    {
+      "id": "CIRCULAR-2021-01",
+      "regulation": "CIRCULAR",
+      "title": "Consumer Financial Protection Circular 2021-01: authorized-positive overdraft fees",
+      "text": "Charging an overdraft fee on a transaction that was authorized against a positive available balance and settled against a negative balance can constitute an unfair act or practice. Consumers cannot reasonably avoid the injury because they cannot control when a merchant settles a transaction, and the disclosure of the practice in an account agreement does not by itself make the injury reasonably avoidable."
+    },
+    {
+      "id": "CIRCULAR-2022-06",
+      "regulation": "CIRCULAR",
+      "title": "Consumer Financial Protection Circular 2022-06: surprise depositor fees",
+      "text": "Charging a returned deposited item fee to a depositor on a blanket basis, regardless of the circumstances of the returned item, is likely to be an unfair practice. A depositor who receives a check that is later returned unpaid generally has no ability to know or control whether the check will clear, so the injury is not reasonably avoidable, and a blanket policy does not distinguish the cases where the depositor could have avoided it."
+    }
+  ]
+}

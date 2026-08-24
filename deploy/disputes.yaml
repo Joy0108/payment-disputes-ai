@@ -1,0 +1,159 @@
+# Two workloads from one image, scaled on different signals.
+#
+# The synchronous API is latency-bound: an agent has a consumer on the phone.
+# The batch worker is throughput-bound: the overnight file is thousands of
+# disputes and nobody is waiting. Running them as one deployment means one
+# replica count and one autoscaling signal serving two different constraints,
+# and the batch load then evicts the interactive traffic exactly when the
+# overnight file lands.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: disputes
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: disputes-config
+  namespace: disputes
+data:
+  DISPUTES_LLM: "template"
+  # Split boundaries are policy, not code. A change here changes which data
+  # every model was fitted on and must be reviewable on its own.
+  DISPUTES_SPLIT_TRAIN_END: "2023-04-01"
+  DISPUTES_SPLIT_VAL_END: "2023-11-01"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: disputes-api
+  namespace: disputes
+spec:
+  replicas: 3
+  selector:
+    matchLabels: { app: disputes-api }
+  template:
+    metadata:
+      labels: { app: disputes-api }
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/joy0108/payment-disputes-ai:latest
+          args: ["serve", "--host", "0.0.0.0"]
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef: { name: disputes-config }
+          resources:
+            requests: { cpu: "300m", memory: "768Mi" }
+            limits: { cpu: "1", memory: "1536Mi" }
+          # The models and the regulation index load at startup, so the pod is
+          # alive well before it can answer. A readiness probe that only checks
+          # the port would route traffic into a 2-second stall on every rollout.
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 8
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 30
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: disputes-api
+  namespace: disputes
+spec:
+  selector: { app: disputes-api }
+  ports:
+    - port: 80
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: disputes-worker
+  namespace: disputes
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: disputes-worker }
+  template:
+    metadata:
+      labels: { app: disputes-worker }
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/joy0108/payment-disputes-ai:latest
+          args: ["eval", "--fast", "--no-gate"]
+          envFrom:
+            - configMapRef: { name: disputes-config }
+          resources:
+            requests: { cpu: "500m", memory: "1Gi" }
+            limits: { cpu: "2", memory: "3Gi" }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: disputes-worker
+  namespace: disputes
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: disputes-worker }
+  minReplicas: 1
+  maxReplicas: 20
+  metrics:
+    - type: External
+      external:
+        metric: { name: dispute_queue_depth }
+        target: { type: AverageValue, averageValue: "150" }
+  behavior:
+    scaleDown:
+      # The overnight file drains in minutes. Without a window the autoscaler
+      # thrashes through the whole burst.
+      stabilizationWindowSeconds: 600
+---
+# Shadow-mode evaluation of the candidate model against production traffic.
+# Runs daily and produces a report; it does not promote anything.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: disputes-shadow
+  namespace: disputes
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: shadow
+              image: ghcr.io/joy0108/payment-disputes-ai:latest
+              args: ["shadow"]
+              envFrom:
+                - configMapRef: { name: disputes-config }
+---
+# Drift monitoring against a fixed reference window, not against the whole
+# training set. See monitoring/drift.py: a baseline containing both regimes
+# reports stable while the model is measurably stale.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: disputes-drift
+  namespace: disputes
+spec:
+  schedule: "30 2 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: drift
+              image: ghcr.io/joy0108/payment-disputes-ai:latest
+              args: ["drift", "--reference-months", "12"]
+              envFrom:
+                - configMapRef: { name: disputes-config }

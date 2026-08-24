@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# Derived layers and trained artefacts. Rebuilt by `make build` and `make train`;
+# the manifest that records their hashes is committed, the files are not.
+artifacts/
+data/silver/
+data/gold/

@@ -1,0 +1,4 @@
+outs:
+- md5: a075c8e05227e01a3357cc4d9bfb4db2
+  size: 2619453
+  path: fraud_applications.csv

@@ -1,0 +1,327 @@
+{
+  "data": {
+    "complaints": 9000,
+    "splits": {
+      "train": 6153,
+      "validation": 1344,
+      "test": 1503
+    },
+    "manifest_fingerprint": "9be7dcde888d2d53"
+  },
+  "deadlines": {
+    "cases": 22,
+    "passed": 22,
+    "exactness": 1.0,
+    "failures": [],
+    "by_kind": {
+      "calendar": 4,
+      "fcra": 2,
+      "fdcpa": 3,
+      "reg_e": 7,
+      "reg_e_liability": 3,
+      "reg_z": 3
+    }
+  },
+  "retrieval": {
+    "k": 4,
+    "questions": 30,
+    "recall@4": 0.85,
+    "any_primary@4": 0.8667,
+    "precision@4": 0.3167,
+    "mrr": 0.6944,
+    "regulation_routing_accuracy": 0.9333,
+    "deadline_agreement": {
+      "checked": 8,
+      "agree": 8,
+      "disagreements": []
+    }
+  },
+  "models": {
+    "issue_classifier": {
+      "model": "issue_classifier",
+      "target": "label_issue",
+      "metric": "macro_f1",
+      "validation_score": 0.8366,
+      "test_score": 0.8301,
+      "best_params": {
+        "C": 0.5573207621105121,
+        "min_df": 5,
+        "max_features": 27689,
+        "ngram_high": 2,
+        "class_weight": null
+      },
+      "search": {
+        "trials": 24,
+        "best_score": 0.83662,
+        "best_params": {
+          "C": 0.5573207621105121,
+          "min_df": 5,
+          "max_features": 27689,
+          "ngram_high": 2,
+          "class_weight": null
+        },
+        "improvements": [
+          {
+            "trial": 0,
+            "score": 0.83035
+          },
+          {
+            "trial": 11,
+            "score": 0.8341
+          },
+          {
+            "trial": 12,
+            "score": 0.83662
+          }
+        ]
+      },
+      "classes": 20,
+      "test_micro_f1": 0.819,
+      "weakest_classes": [
+        {
+          "issue": "Problem with a purchase shown on your statement",
+          "f1": 0.745
+        },
+        {
+          "issue": "Money was not available when promised",
+          "f1": 0.7547
+        },
+        {
+          "issue": "Written notification about debt",
+          "f1": 0.7706
+        }
+      ]
+    },
+    "outcome_model": {
+      "model": "outcome_model",
+      "target": "label_outcome",
+      "metric": "balanced_accuracy",
+      "validation_score": 0.2815,
+      "test_score": 0.2896,
+      "best_params": {
+        "C": 0.3462346368943372,
+        "min_df": 1,
+        "max_features": 40000,
+        "ngram_high": 1,
+        "class_weight": "balanced"
+      },
+      "search": {
+        "trials": 24,
+        "best_score": 0.28153,
+        "best_params": {
+          "C": 0.3462346368943372,
+          "min_df": 1,
+          "max_features": 40000,
+          "ngram_high": 1,
+          "class_weight": "balanced"
+        },
+        "improvements": [
+          {
+            "trial": 0,
+            "score": 0.24108
+          },
+          {
+            "trial": 1,
+            "score": 0.27844
+          },
+          {
+            "trial": 5,
+            "score": 0.28097
+          },
+          {
+            "trial": 17,
+            "score": 0.28153
+          }
+        ]
+      },
+      "classes": 5,
+      "random_split_reference": 0.3062,
+      "temporal_penalty": 0.0166,
+      "note": "random_split_reference is what a shuffled split would have reported for the same model. The gap is the response-policy drift the temporal split refuses to hide."
+    },
+    "escalation_model": {
+      "model": "escalation_model",
+      "target": "label_escalation",
+      "metric": "roc_auc",
+      "validation_score": 0.7308,
+      "test_score": 0.7127,
+      "best_params": {
+        "C": 2.4903750276891397,
+        "min_df": 4,
+        "max_features": 40000,
+        "ngram_high": 1,
+        "class_weight": "balanced"
+      },
+      "search": {
+        "trials": 24,
+        "best_score": 0.73078,
+        "best_params": {
+          "C": 2.4903750276891397,
+          "min_df": 4,
+          "max_features": 40000,
+          "ngram_high": 1,
+          "class_weight": "balanced"
+        },
+        "improvements": [
+          {
+            "trial": 0,
+            "score": 0.72971
+          },
+          {
+            "trial": 7,
+            "score": 0.72971
+          },
+          {
+            "trial": 8,
+            "score": 0.72995
+          },
+          {
+            "trial": 10,
+            "score": 0.73061
+          },
+          {
+            "trial": 18,
+            "score": 0.73078
+          }
+        ]
+      },
+      "positive_rate": 0.2854
+    },
+    "fraud_model": {
+      "model": "fraud_model",
+      "target": "fraud_bool",
+      "metric": "recall@2%_alert_budget",
+      "validation_score": 0.1698,
+      "test_score": 0.134,
+      "best_params": {
+        "C": 0.15238886861800116,
+        "class_weight": null
+      },
+      "search": {
+        "trials": 12,
+        "best_score": 0.16981,
+        "best_params": {
+          "C": 0.15238886861800116,
+          "class_weight": null
+        },
+        "improvements": [
+          {
+            "trial": 0,
+            "score": 0.15094
+          },
+          {
+            "trial": 7,
+            "score": 0.16981
+          }
+        ]
+      },
+      "alert_budget": 0.02,
+      "precision_at_budget": 0.1083,
+      "test_roc_auc": 0.8103,
+      "base_rate": 0.01617,
+      "lift_over_random": 6.7,
+      "keep_alive_coefficient": -0.0179,
+      "note": "keep_alive_session inverts its relationship to the label partway through the window. A model fitted across the whole period averages the two regimes and its coefficient lands near zero, which is the shape a concept drift leaves behind."
+    }
+  },
+  "workflow": {
+    "sampled": 120,
+    "citations": 1066,
+    "citation_resolution": 1.0,
+    "invented_dates": 0,
+    "uncited_claims": 0,
+    "verification_pass_rate": 1.0,
+    "passed_on_first_attempt": 1.0,
+    "mean_draft_attempts": 1.0,
+    "routing": {
+      "auto_send": 69,
+      "manual_review": 51
+    },
+    "failures": []
+  },
+  "gates": {
+    "passed": true,
+    "results": [
+      {
+        "gate": "deadline_exactness",
+        "minimum": 1.0,
+        "actual": 1.0,
+        "status": "pass",
+        "rationale": "Absolute. A miscomputed regulatory deadline is a violation, not a lower score."
+      },
+      {
+        "gate": "citation_resolution",
+        "minimum": 0.99,
+        "actual": 1.0,
+        "status": "pass",
+        "rationale": "A citation that resolves to nothing is a fabricated reference in a consumer-facing letter."
+      },
+      {
+        "gate": "rag_recall_at_k",
+        "minimum": 0.8,
+        "actual": 0.85,
+        "status": "pass",
+        "rationale": ""
+      },
+      {
+        "gate": "issue_macro_f1",
+        "minimum": 0.78,
+        "actual": 0.8301,
+        "status": "pass",
+        "rationale": ""
+      },
+      {
+        "gate": "outcome_balanced_accuracy",
+        "minimum": 0.25,
+        "actual": 0.2896,
+        "status": "pass",
+        "rationale": ""
+      },
+      {
+        "gate": "escalation_roc_auc",
+        "minimum": 0.66,
+        "actual": 0.7127,
+        "status": "pass",
+        "rationale": ""
+      },
+      {
+        "gate": "fraud_recall_at_budget",
+        "minimum": 0.1,
+        "actual": 0.134,
+        "status": "pass",
+        "rationale": "Recall measured at the alert volume the review team can actually work."
+      }
+    ],
+    "failed": [],
+    "skipped": []
+  },
+  "config": {
+    "rag": {
+      "top_k": 4,
+      "candidate_k": 20,
+      "rrf_k": 60,
+      "rerank": true,
+      "embed_dim": 96,
+      "require_citations": true
+    },
+    "llm": {
+      "backend": "template",
+      "anthropic_model": "claude-opus-5",
+      "prompt_version": "v3"
+    },
+    "gates": {
+      "issue_macro_f1": 0.78,
+      "outcome_balanced_accuracy": 0.25,
+      "escalation_roc_auc": 0.66,
+      "fraud_recall_at_budget": 0.1,
+      "rag_recall_at_k": 0.8,
+      "citation_resolution": 0.99,
+      "deadline_exactness": 1.0,
+      "thresholds": {
+        "deadline_exactness": "Absolute. A miscomputed regulatory deadline is a violation, not a lower score.",
+        "citation_resolution": "A citation that resolves to nothing is a fabricated reference in a consumer-facing letter.",
+        "fraud_recall_at_budget": "Recall measured at the alert volume the review team can actually work."
+      }
+    }
+  }
+}

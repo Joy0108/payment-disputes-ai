@@ -1,0 +1,11 @@
+# The generated corpora are compared byte for byte in CI to prove the generator
+# is reproducible. Git must not rewrite their line endings on checkout, or the
+# comparison fails on one platform and passes on the other for a reason that has
+# nothing to do with the data.
+data/raw/*.csv   text eol=lf
+data/**/*.json   text eol=lf
+data/**/*.jsonl  text eol=lf
+
+# Everything else is stored with LF in the repository and checked out with LF,
+# so a Windows and a Linux working tree agree.
+* text=auto eol=lf

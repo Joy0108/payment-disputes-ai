@@ -1,0 +1,40 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DISPUTES_LLM: template
+    volumes:
+      - ./reports:/app/reports
+      - ./artifacts:/app/artifacts
+    command: ["serve", "--host", "0.0.0.0"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+
+  # The batch worker shares the image and drains the same queue. Separated so it
+  # can be scaled independently: the overnight file is throughput-bound and the
+  # synchronous path is latency-bound, and one replica count cannot serve both.
+  worker:
+    build: .
+    environment:
+      DISPUTES_LLM: template
+    volumes:
+      - ./artifacts:/app/artifacts
+    command: ["eval", "--fast", "--no-gate"]
+    depends_on:
+      - api
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:////mlflow/mlflow.db
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow-store:/mlflow
+
+volumes:
+  mlflow-store:

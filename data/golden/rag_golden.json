@@ -1,0 +1,263 @@
+{
+  "schema_version": "1.0",
+  "frozen_at": "2024-08-16",
+  "note": "Hand-built against the regulation corpus before the retriever was tuned. Written the way an intake agent or a consumer phrases things, not the way the regulation does, because that gap is the retrieval problem. Questions carrying deadline_check are also answered by the deterministic rules engine, and the two answers must agree.",
+  "questions": [
+    {
+      "qid": "Q-01",
+      "question": "How long does the bank have to investigate an unauthorized debit card charge?",
+      "regulation": "REG_E",
+      "primary": ["1005.11(c)(1)"],
+      "secondary": ["1005.11(c)(2)"],
+      "deadline_check": "reg_e_initial_business_days",
+      "expected": 10,
+      "reference_answer": "Ten business days from receiving the notice of error, or up to 45 days if it provisionally credits the account within those ten business days."
+    },
+    {
+      "qid": "Q-02",
+      "question": "When does the bank have to give me temporary credit while it looks into the charge?",
+      "regulation": "REG_E",
+      "primary": ["1005.11(c)(2)"],
+      "secondary": ["1005.11(c)(1)"],
+      "reference_answer": "Provisional credit must be given within 10 business days of the notice of error if the institution wants the extension to 45 days, and the consumer must be told of the credit within two business days of it being applied."
+    },
+    {
+      "qid": "Q-03",
+      "question": "My account was opened last month. Does the bank get longer to investigate?",
+      "regulation": "REG_E",
+      "primary": ["1005.11(c)(3)"],
+      "secondary": ["1005.11(c)(1)"],
+      "deadline_check": "reg_e_new_account_business_days",
+      "expected": 20,
+      "reference_answer": "Yes. For a transfer occurring within 30 days of the first deposit, the initial period is 20 business days rather than 10 and the extended period is 90 days rather than 45."
+    },
+    {
+      "qid": "Q-04",
+      "question": "Is there a longer window for a point of sale card transaction or one from abroad?",
+      "regulation": "REG_E",
+      "primary": ["1005.11(c)(3)"],
+      "secondary": [],
+      "reference_answer": "The 90-day extended period applies to point-of-sale debit card transactions and transfers initiated outside the United States, but the initial period stays at 10 business days unless the account is also new."
+    },
+    {
+      "qid": "Q-05",
+      "question": "How much can I be on the hook for if my card was stolen and I told the bank the next day?",
+      "regulation": "REG_E",
+      "primary": ["1005.6(b)"],
+      "secondary": [],
+      "reference_answer": "Notice within two business days of learning of the loss caps liability at the lesser of $50 or the amount of the unauthorized transfers before notice."
+    },
+    {
+      "qid": "Q-06",
+      "question": "What happens if I did not notice the charge until three months after the statement?",
+      "regulation": "REG_E",
+      "primary": ["1005.6(b)(3)", "1005.11(b)"],
+      "secondary": ["1005.6(b)"],
+      "deadline_check": "reg_e_notice_calendar_days",
+      "expected": 60,
+      "reference_answer": "The notice window is 60 days from transmittal of the statement. After it, liability for transfers occurring after the 60 days and before notice can be unlimited, though the period is extended for extenuating circumstances such as hospitalisation or extended travel."
+    },
+    {
+      "qid": "Q-07",
+      "question": "The bank decided no error happened. What are they required to send me?",
+      "regulation": "REG_E",
+      "primary": ["1005.11(d)"],
+      "secondary": ["1005.11(c)(1)"],
+      "reference_answer": "A written explanation of its findings within three business days of concluding the investigation, and notice of the right to request the documents it relied on. If it debits a provisional credit it must say when and how much, and honour checks and preauthorised transfers for five business days after."
+    },
+    {
+      "qid": "Q-08",
+      "question": "A company keeps taking money out of my account after I told them to stop. What are my rights?",
+      "regulation": "REG_E",
+      "primary": ["1005.10(b)"],
+      "secondary": ["1005.11(b)"],
+      "reference_answer": "Preauthorized transfers require a signed or similarly authenticated written authorization, and the consumer may stop payment by notifying the institution at least three business days before the scheduled transfer."
+    },
+    {
+      "qid": "Q-09",
+      "question": "How long do I have to dispute a charge on my credit card statement?",
+      "regulation": "REG_Z",
+      "primary": ["1026.13(b)"],
+      "secondary": ["1026.13(a)"],
+      "deadline_check": "reg_z_notice_calendar_days",
+      "expected": 60,
+      "reference_answer": "A written billing error notice must reach the creditor at the address disclosed for billing inquiries within 60 days of the creditor transmitting the first statement reflecting the error."
+    },
+    {
+      "qid": "Q-10",
+      "question": "How quickly does the card company have to sort out a billing error?",
+      "regulation": "REG_Z",
+      "primary": ["1026.13(c)(2)"],
+      "secondary": ["1026.13(c)(1)"],
+      "deadline_check": "reg_z_resolution_cap_days",
+      "expected": 90,
+      "reference_answer": "Acknowledgement within 30 days, and resolution within two complete billing cycles but in no event later than 90 days."
+    },
+    {
+      "qid": "Q-11",
+      "question": "Can they report me as late while the dispute is still open?",
+      "regulation": "REG_Z",
+      "primary": ["1026.13(d)"],
+      "secondary": ["1026.13(c)(2)"],
+      "reference_answer": "No. The creditor may not make or threaten an adverse credit report, or report the disputed amount as delinquent, because the consumer did not pay it while the dispute is unresolved, and may not close the account solely for asserting billing error rights."
+    },
+    {
+      "qid": "Q-12",
+      "question": "The merchant will not refund me and the card company says it is not their problem.",
+      "regulation": "REG_Z",
+      "primary": ["1026.12(c)"],
+      "secondary": ["1026.13(a)"],
+      "reference_answer": "A cardholder may assert claims and defences arising from the transaction against the card issuer, provided a good faith attempt was made to resolve with the merchant, the amount exceeds $50, and the transaction occurred in the same state or within 100 miles of the billing address, unless the merchant is affiliated with the issuer."
+    },
+    {
+      "qid": "Q-13",
+      "question": "Someone used my credit card. What is the most I can be charged?",
+      "regulation": "REG_Z",
+      "primary": ["1026.12(b)"],
+      "secondary": [],
+      "reference_answer": "Liability for unauthorized use of a credit card is capped at the lesser of $50 or the value obtained before notification, and the issuer bears the burden of proving the use was authorized."
+    },
+    {
+      "qid": "Q-14",
+      "question": "How long does the credit bureau get to look into something I disputed?",
+      "regulation": "FCRA",
+      "primary": ["1681i(a)(1)"],
+      "secondary": ["1681s-2(b)"],
+      "deadline_check": "fcra_reinvestigation_days",
+      "expected": 30,
+      "reference_answer": "Thirty days from receipt of the dispute, extendable to 45 if the consumer supplies additional relevant information within the first 30."
+    },
+    {
+      "qid": "Q-15",
+      "question": "The bureau deleted a wrong item and then it came back on my report.",
+      "regulation": "FCRA",
+      "primary": ["1681i(a)(5)"],
+      "secondary": ["1681i(a)(1)"],
+      "reference_answer": "Deleted information may not be reinserted unless the furnisher certifies it is complete and accurate, and the agency must notify the consumer of the reinsertion within five business days."
+    },
+    {
+      "qid": "Q-16",
+      "question": "What does the company that reported the bad information have to do when I dispute it?",
+      "regulation": "FCRA",
+      "primary": ["1681s-2(b)"],
+      "secondary": ["1681i(a)(1)"],
+      "reference_answer": "The furnisher must investigate, review the information the agency supplied, report the results back, and if the information is found incomplete or inaccurate report that to every other agency it supplied, all within the agency's reinvestigation window."
+    },
+    {
+      "qid": "Q-17",
+      "question": "A lender pulled my credit without asking me.",
+      "regulation": "FCRA",
+      "primary": ["1681b(f)"],
+      "secondary": ["1681m(a)"],
+      "reference_answer": "A report may only be obtained for a permissible purpose, certified to the agency by the user. Obtaining a report without one is a violation whether or not any adverse action follows."
+    },
+    {
+      "qid": "Q-18",
+      "question": "I was turned down for a loan because of my credit file. What should I have been told?",
+      "regulation": "FCRA",
+      "primary": ["1681m(a)"],
+      "secondary": ["1681b(f)"],
+      "reference_answer": "An adverse action notice identifying the consumer reporting agency that furnished the report, and notice of the right to a free copy within 60 days and to dispute the accuracy or completeness of the information."
+    },
+    {
+      "qid": "Q-19",
+      "question": "A debt collector called me for the first time. What do they have to send me and when?",
+      "regulation": "FDCPA",
+      "primary": ["1692g(a)"],
+      "secondary": [],
+      "deadline_check": "fdcpa_validation_notice_days",
+      "expected": 5,
+      "reference_answer": "A written validation notice within five days of the initial communication, stating the amount, the creditor, and the consumer's right to dispute within 30 days."
+    },
+    {
+      "qid": "Q-20",
+      "question": "I wrote to the collector saying I do not owe this. Can they keep calling?",
+      "regulation": "FDCPA",
+      "primary": ["1692g(b)"],
+      "secondary": ["1692g(a)"],
+      "deadline_check": "fdcpa_dispute_window_days",
+      "expected": 30,
+      "reference_answer": "If the written dispute arrives within the 30-day validation window, collection must cease until the collector obtains verification of the debt or a copy of a judgment and mails it to the consumer."
+    },
+    {
+      "qid": "Q-21",
+      "question": "The collector rings me at seven in the morning and at my workplace.",
+      "regulation": "FDCPA",
+      "primary": ["1692c(a)"],
+      "secondary": ["1692d"],
+      "reference_answer": "Absent consent, a collector may not communicate at an unusual time, and must assume before 8am and after 9pm local time is inconvenient, nor at the workplace where it knows the employer prohibits it."
+    },
+    {
+      "qid": "Q-22",
+      "question": "They said they would have me arrested if I do not pay.",
+      "regulation": "FDCPA",
+      "primary": ["1692e"],
+      "secondary": ["1692d"],
+      "reference_answer": "Threatening action that cannot legally be taken or is not intended to be taken is a false or misleading representation, and falsely implying non-payment leads to arrest is specifically prohibited."
+    },
+    {
+      "qid": "Q-23",
+      "question": "The collector rang me over and over to wear me down.",
+      "regulation": "FDCPA",
+      "primary": ["1692d"],
+      "secondary": ["1692c(a)"],
+      "reference_answer": "Causing a telephone to ring or engaging a person in conversation repeatedly with intent to annoy, abuse or harass is prohibited conduct."
+    },
+    {
+      "qid": "Q-24",
+      "question": "I was charged an overdraft fee on a purchase that was approved when my balance was positive.",
+      "regulation": "CIRCULAR",
+      "primary": ["CIRCULAR-2021-01"],
+      "secondary": [],
+      "reference_answer": "Charging an overdraft fee on a transaction authorized against a positive balance that settles against a negative one can be an unfair practice, because the consumer cannot control when the merchant settles and disclosure alone does not make the injury avoidable."
+    },
+    {
+      "qid": "Q-25",
+      "question": "My bank charged me a fee because a cheque somebody gave me bounced.",
+      "regulation": "CIRCULAR",
+      "primary": ["CIRCULAR-2022-06"],
+      "secondary": [],
+      "reference_answer": "A blanket returned deposited item fee is likely unfair: the depositor generally cannot know or control whether the cheque will clear, so the injury is not reasonably avoidable."
+    },
+    {
+      "qid": "Q-26",
+      "question": "My account was taken over because the bank had no two factor authentication.",
+      "regulation": "CIRCULAR",
+      "primary": ["CIRCULAR-2022-04"],
+      "secondary": [],
+      "reference_answer": "Inadequate data security can be an unfair practice in itself. The absence of multi-factor authentication, weak password policies and unpatched software are practices the Bureau has identified, and a breach need not have occurred."
+    },
+    {
+      "qid": "Q-27",
+      "question": "What counts as a billing error on a credit card in the first place?",
+      "regulation": "REG_Z",
+      "primary": ["1026.13(a)"],
+      "secondary": ["1026.13(b)"],
+      "reference_answer": "Extensions of credit not made to the consumer or an authorised user, unidentified extensions, property or services not accepted or not delivered as agreed, computational errors, payments not properly credited, and failure to send the statement to the last known address."
+    },
+    {
+      "qid": "Q-28",
+      "question": "Does the bank have to follow the error rules for a prepaid card?",
+      "regulation": "REG_E",
+      "primary": ["1005.18(e)"],
+      "secondary": ["1005.11(c)(1)"],
+      "reference_answer": "Yes once identity verification has been completed. Where the institution has not successfully completed verification for the prepaid account, the liability limits and error resolution requirements do not apply."
+    },
+    {
+      "qid": "Q-29",
+      "question": "I raised the same error again after the bank closed it. Do they have to look again?",
+      "regulation": "REG_E",
+      "primary": ["1005.11(e)"],
+      "secondary": ["1005.11(d)"],
+      "reference_answer": "An institution that has fully complied has no further obligation on a reassertion of the same error, except where the consumer asserts an error after receiving the documents it relied on."
+    },
+    {
+      "qid": "Q-30",
+      "question": "What has to be in my notice to the bank for it to count?",
+      "regulation": "REG_E",
+      "primary": ["1005.11(b)"],
+      "secondary": ["1005.11(c)(1)"],
+      "reference_answer": "Oral or written notice within 60 days of the statement, enabling the institution to identify the consumer's name and account number, and indicating why an error is believed to exist and, so far as possible, its type, date and amount."
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-and-gate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev,serving]"
+
+      - name: Lint
+        run: ruff check src tests scripts
+
+      - name: Regenerate the raw corpora
+        run: python scripts/build_data.py
+
+      # The corpora are generated from a seed. A diff here means the generator
+      # changed and the committed data no longer matches it.
+      - name: Corpora are reproducible
+        run: git diff --exit-code data/raw/
+
+      # Runs before anything else that could take time. Deadline exactness is
+      # the one gate with no acceptable failure rate, so it fails the build in
+      # under a second rather than after the models train.
+      - name: Regulatory deadline cases
+        run: python -m disputes.cli deadlines
+
+      - name: Build the data layers
+        run: python -m disputes.cli build
+
+      - name: Data contracts hold at every boundary
+        run: python -m disputes.cli verify
+
+      - name: Tests
+        run: pytest
+
+      - name: Train
+        run: python -m disputes.cli train
+
+      # Fails on any gate: deadline exactness, citation resolution, retrieval
+      # recall, and the four model metrics.
+      - name: Evaluation and promotion gates
+        run: python -m disputes.cli eval --sample 60
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-report-py${{ matrix.python-version }}
+          path: |
+            reports/
+            artifacts/models.json

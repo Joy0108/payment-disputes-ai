@@ -1,0 +1,14 @@
+{
+  "seed": 20240815,
+  "complaints": {
+    "response_drift_date": "2022-09-01",
+    "response_drift": "relief rate falls by roughly 10 points after this date",
+    "large_institution_share": 0.6901
+  },
+  "fraud": {
+    "base_rate": 0.01188,
+    "concept_drift_month": 4,
+    "drifting_feature": "keep_alive_session",
+    "drift_description": "the sign of the keep_alive_session coefficient inverts at month 4"
+  }
+}
