@@ -1,10 +1,11 @@
 # AI System for Payment Disputes and Consumer Financial Complaints
 
-Intake to cited draft response. Four models classify and score the complaint, a
-deterministic rules engine computes every regulatory deadline, section-level
-retrieval finds the governing provision, and a generator writes the letter —
-under a verifier that rejects any draft citing a section that does not exist or
-stating a date the rules engine never produced.
+Intake to cited draft response, orchestrated as a **LangGraph** state graph.
+Four models classify and score the complaint, a deterministic rules engine
+computes every regulatory deadline, section-level retrieval finds the governing
+provision, and a generator writes the letter — under a verifier that rejects any
+draft citing a section that does not exist or stating a date the rules engine
+never produced.
 
 ```bash
 pip install -e ".[dev,serving]"
@@ -12,6 +13,7 @@ make build                 # raw -> bronze -> silver -> gold, validated at each 
 make train                 # the four models
 make eval                  # full evaluation and the promotion gates
 disputes deadlines         # 22 hand-computed regulatory deadline cases
+disputes workflow          # the compiled LangGraph, as mermaid
 disputes serve             # FastAPI on :8000
 ```
 
@@ -20,6 +22,9 @@ disputes serve             # FastAPI on :8000
 > and CFPB circulars, a 30-question frozen retrieval set, and 22 hand-computed
 > deadline cases. Every number below comes from `make eval` on this machine.
 > Two of the results are negative and they are in the table with the rest.
+> The corpora are synthetic, generated from a seed with two documented
+> distribution shifts injected, so every result here is reproducible from a
+> clean checkout.
 
 ---
 
@@ -69,6 +74,65 @@ engine raises if a run finishes without them. The `unclassifiable` branch is
 registered as an escape, because a complaint the pipeline cannot categorise
 produces no letter, and demanding it computed a deadline first would be
 demanding it guess.
+
+---
+
+## Orchestration: LangGraph, and a control to prove it
+
+The workflow runs on **LangGraph**. The topology — nodes, edges, routers, the
+required-stage rule — is declared once in `workflow/spec.py` and compiled into
+a `StateGraph`. Four things made the library worth the dependency, and each one
+replaced something this codebase would otherwise maintain by hand:
+
+**Reducers put the merge rule in the type.** `_path` and `_checkpoints` are
+`Annotated[list[...], operator.add]` on the state schema, so "a node returns a
+partial update that is merged, never substituted" stops being a convention the
+engine enforces and becomes a property a node *cannot* violate. It could not
+overwrite the audit trail if it tried.
+
+**The checkpointer is the audit trail.** Every super-step is persisted, so
+`state_history()` answers the examiner's question — *what did the system know,
+and when* — from the framework's own durable record rather than from a list
+this code appends to and could forget to append to. State types crossing the
+checkpointer are registered explicitly (`ALLOWED_STATE_TYPES`); LangGraph
+blocks deserialising arbitrary classes out of a checkpoint, and it is right to.
+
+**Interrupts are the human gate.** The workflow already computes
+`requires_human_approval`. With `human_in_the_loop=True` the graph *stops*
+before it routes, and `resume()` continues from the persisted checkpoint — so
+the approver reads the finished draft and its verification, the thing being
+approved, rather than a queue assignment already made on their behalf. A pause
+that survives process death is a durability property, and not one worth
+hand-writing.
+
+**`recursion_limit` bounds the cycle.** `verify → draft` is a real cycle. A
+verifier that never passes terminates with a graph error instead of spinning.
+
+What LangGraph does *not* provide is the required-stage rule — there is no way
+to declare "this run is invalid unless `compute_deadlines` executed". That
+check stays ours and runs against the accumulated path, honouring the escape.
+
+### The conformance test
+
+`workflow/graph.py` holds a second executor: a dependency-free walker over the
+same `WorkflowSpec`. It is not a fallback anyone is expected to run — it is the
+**control**.
+
+Both engines call the same router functions and the same `missing_required`
+check, so the test asserting that one dispute produces an identical path, audit
+trail, letter and routing decision under both is asserting that the two
+executors agree — not that two hand-written copies of a graph happen to have
+been edited in step. CI runs it as a step of its own:
+
+```
+python -m disputes.cli dispute --engine langgraph ... > langgraph.txt
+python -m disputes.cli dispute --engine reference ... > reference.txt
+diff langgraph.txt reference.txt
+```
+
+Reducers, conditional edges and the recursion bound either mean what the
+reference walker means, or `diff` says so. That is the difference between using
+a framework and understanding it.
 
 ---
 
@@ -293,7 +357,7 @@ disputes build [--lenient]     bronze, silver, gold, with contracts at each boun
 disputes verify                re-hash the tracked data and report what moved
 disputes train                 the four models, TPE hyperparameter search
 disputes deadlines             the 22 hand-computed regulatory cases
-disputes dispute [--file ...]  the eight-step workflow on one dispute
+disputes dispute [--engine]    the eight-step workflow on one dispute
 disputes regulations "<q>"     query the regulation corpus
 disputes curriculum            build the SFT dataset and run the ordering experiment
 disputes qlora-plan            the fine-tune plan, without a GPU
@@ -301,7 +365,7 @@ disputes shadow                shadow-mode comparison, segmented
 disputes drift                 drift monitors against a reference window
 disputes eval [--fast]         full evaluation and the promotion gates
 disputes serve                 FastAPI on :8000
-disputes workflow              print the workflow as mermaid
+disputes workflow [--engine]   print the compiled graph as mermaid (LangGraph's own renderer)
 ```
 
 ## Layout
@@ -316,11 +380,11 @@ src/disputes/data/        layers, declarative contracts, content-addressed manif
 src/disputes/models/      TPE search and the four models
 src/disputes/rag/         section retrieval, drafting, the verifier
 src/disputes/llm/         SFT dataset, curriculum experiment, QLoRA config
-src/disputes/workflow/    state machine and the eight steps
+src/disputes/workflow/    spec (topology), the LangGraph engine, the reference walker, the eight steps
 src/disputes/monitoring/  drift and shadow mode
 src/disputes/service/     FastAPI and the durable batch queue
 deploy/                   Kubernetes: split API/worker scaling, shadow and drift CronJobs
-tests/                    89 tests; `make test`
+tests/                    96 tests, including the cross-engine conformance test; `make test`
 ```
 
 ## License

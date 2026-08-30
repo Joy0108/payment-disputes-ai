@@ -16,6 +16,7 @@ the rules engine never produced, is not published.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Any
 
@@ -25,8 +26,40 @@ from ..rag.index import RegulationIndex
 from ..rules import deadlines as rules
 from ..rules.validate import map_reason_code, validate_amounts, validate_dates
 from .graph import END, START, StateMachine, WorkflowError
+from .spec import WorkflowSpec
 
 MAX_DRAFT_ATTEMPTS = 3
+
+#: ``langgraph`` when installed, otherwise the dependency-free walker.
+#: ``DISPUTES_ENGINE`` pins it, which is what the conformance test uses to run
+#: the same dispute through both without rebuilding the topology.
+ENGINE_ENV = "DISPUTES_ENGINE"
+
+
+def select_engine(engine: str = "auto") -> str:
+    from .langgraph_engine import langgraph_available
+
+    if engine == "auto":
+        engine = os.environ.get(ENGINE_ENV, "auto")
+    if engine == "auto":
+        return "langgraph" if langgraph_available() else "reference"
+    if engine not in {"langgraph", "reference"}:
+        raise WorkflowError(f"unknown engine {engine!r}; expected 'langgraph', 'reference' or 'auto'")
+    if engine == "langgraph" and not langgraph_available():
+        raise WorkflowError("engine='langgraph' requested but langgraph is not installed; pip install '.[graph]'")
+    return engine
+
+
+def compile_workflow(spec: WorkflowSpec, engine: str = "auto", human_in_the_loop: bool = False):
+    """Turn a declared topology into something with ``.invoke``."""
+    resolved = select_engine(engine)
+    if resolved == "langgraph":
+        from .langgraph_engine import LangGraphWorkflow
+
+        return LangGraphWorkflow(spec, human_in_the_loop=human_in_the_loop)
+    if human_in_the_loop:
+        raise WorkflowError("the human gate needs a checkpointer; it is only available on the langgraph engine")
+    return StateMachine.from_spec(spec)
 
 
 @dataclass
@@ -58,7 +91,9 @@ def build_workflow(
     index: RegulationIndex | None = None,
     predictors: Predictors | None = None,
     llm: LlmConfig = DEFAULT_LLM,
-) -> StateMachine:
+    engine: str = "auto",
+    human_in_the_loop: bool = False,
+):
     index = index if index is not None else RegulationIndex()
     predictors = predictors or Predictors()
     drafter = build_drafter(llm.backend, llm.prompt_version)
@@ -238,39 +273,42 @@ def build_workflow(
             "verification": None,
         }
 
-    machine = StateMachine("dispute-workflow", max_steps=24)
-    machine.add_node("intake", intake)
-    machine.add_node("classify", classify)
-    machine.add_node("validate", validate_fields)
-    machine.add_node("compute_deadlines", compute_deadlines, required=True)
-    machine.add_node("assess_risk", assess_risk)
-    machine.add_node("retrieve_regulation", retrieve_regulation)
-    machine.add_node("draft", draft)
-    machine.add_node("verify", verify_draft, required=True)
-    machine.add_node("route", route)
-    machine.add_node("unclassifiable", unclassifiable)
+    # The topology is declared once, here, and compiled by whichever engine is
+    # selected. max_steps doubles as LangGraph's recursion_limit, so the
+    # verify/draft cycle is bounded identically under both.
+    spec = WorkflowSpec(name="dispute-workflow", max_steps=24)
+    spec.add_node("intake", intake)
+    spec.add_node("classify", classify)
+    spec.add_node("validate", validate_fields)
+    spec.add_node("compute_deadlines", compute_deadlines, required=True)
+    spec.add_node("assess_risk", assess_risk)
+    spec.add_node("retrieve_regulation", retrieve_regulation)
+    spec.add_node("draft", draft)
+    spec.add_node("verify", verify_draft, required=True)
+    spec.add_node("route", route)
+    spec.add_node("unclassifiable", unclassifiable)
 
-    machine.set_escape_nodes({"unclassifiable"})
-    machine.add_edge(START, "intake")
-    machine.add_edge("intake", "classify")
-    machine.add_conditional_edges(
+    spec.set_escape_nodes({"unclassifiable"})
+    spec.add_edge(START, "intake")
+    spec.add_edge("intake", "classify")
+    spec.add_conditional_edges(
         "classify",
         lambda s: "ok" if s.get("issue") else "unclassifiable",
         {"ok": "validate", "unclassifiable": "unclassifiable"},
     )
-    machine.add_edge("validate", "compute_deadlines")
-    machine.add_edge("compute_deadlines", "assess_risk")
-    machine.add_edge("assess_risk", "retrieve_regulation")
-    machine.add_edge("retrieve_regulation", "draft")
-    machine.add_edge("draft", "verify")
-    machine.add_conditional_edges(
+    spec.add_edge("validate", "compute_deadlines")
+    spec.add_edge("compute_deadlines", "assess_risk")
+    spec.add_edge("assess_risk", "retrieve_regulation")
+    spec.add_edge("retrieve_regulation", "draft")
+    spec.add_edge("draft", "verify")
+    spec.add_conditional_edges(
         "verify",
         lambda s: "revise" if (not s["verification"].passed and s["attempts"] < MAX_DRAFT_ATTEMPTS) else "done",
         {"revise": "draft", "done": "route"},
     )
-    machine.add_edge("route", END)
-    machine.add_edge("unclassifiable", END)
-    return machine
+    spec.add_edge("route", END)
+    spec.add_edge("unclassifiable", END)
+    return compile_workflow(spec, engine=engine, human_in_the_loop=human_in_the_loop)
 
 
 def process(
@@ -278,9 +316,18 @@ def process(
     index: RegulationIndex | None = None,
     predictors: Predictors | None = None,
     llm: LlmConfig = DEFAULT_LLM,
+    engine: str = "auto",
 ) -> dict[str, Any]:
-    machine = build_workflow(index, predictors, llm)
+    machine = build_workflow(index, predictors, llm, engine=engine)
     return machine.invoke({"complaint": complaint})
 
 
-__all__ = ["Predictors", "build_workflow", "process", "WorkflowError", "MAX_DRAFT_ATTEMPTS"]
+__all__ = [
+    "MAX_DRAFT_ATTEMPTS",
+    "Predictors",
+    "WorkflowError",
+    "build_workflow",
+    "compile_workflow",
+    "process",
+    "select_engine",
+]

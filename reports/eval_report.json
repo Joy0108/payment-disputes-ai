@@ -6,7 +6,7 @@
       "validation": 1344,
       "test": 1503
     },
-    "manifest_fingerprint": "9be7dcde888d2d53"
+    "manifest_fingerprint": "423883328566f194"
   },
   "deadlines": {
     "cases": 22,
@@ -238,6 +238,57 @@
       "manual_review": 51
     },
     "failures": []
+  },
+  "curriculum": {
+    "dataset": {
+      "examples": 2000,
+      "difficulty_min": 0.1356,
+      "difficulty_median": 0.3478,
+      "difficulty_max": 0.6361,
+      "hardest_drivers": {
+        "deadline_count": 0.9108,
+        "extension_branch": 0.69,
+        "out_of_time": 0.095,
+        "validation_problem": 0.015,
+        "unmapped_reason_code": 0.55,
+        "narrative_noise": 0.4995
+      }
+    },
+    "experiment": {
+      "protocol": "single pass of multinomial SGD, identical seed, identical features, ordering is the only difference",
+      "train_examples": 2000,
+      "test_examples": 800,
+      "classes": 20,
+      "results": [
+        {
+          "ordering": "easy_to_hard",
+          "accuracy": 0.7688,
+          "macro_f1": 0.7501,
+          "final_loss": 1.5227
+        },
+        {
+          "ordering": "shuffled",
+          "accuracy": 0.8113,
+          "macro_f1": 0.7942,
+          "final_loss": 1.606
+        },
+        {
+          "ordering": "hard_to_easy",
+          "accuracy": 0.5775,
+          "macro_f1": 0.5908,
+          "final_loss": 1.4769
+        }
+      ],
+      "curriculum_delta_macro_f1": -0.0441,
+      "difficulty_label_coupling": {
+        "eta_squared": 0.4121,
+        "classes": 20,
+        "note": "fraction of difficulty variance explained by the label; a curriculum assumes this is near zero"
+      },
+      "verdict": "curriculum ordering hurts on a single pass",
+      "diagnosis": "Difficulty is not independent of the label: 41% of its variance is explained by the class. Sorting by difficulty therefore partially sorts by class, and a single pass of SGD over class-blocked data ends fitted to whatever it saw last. The ordering is not teaching the model an easier version of the problem first; it is removing the shuffling that stops recency bias.",
+      "caveat": "One pass over a linear model is the regime where ordering can matter. It is evidence about the curriculum, not about the QLoRA fine-tune, which is not run here."
+    }
   },
   "gates": {
     "passed": true,

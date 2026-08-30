@@ -15,7 +15,8 @@ from disputes.rag.index import RegulationIndex, tokenize
 from disputes.rules import deadlines as rules
 from disputes.service.queue import DisputeQueue
 from disputes.workflow.graph import END, START, StateMachine, WorkflowError, audit_trail
-from disputes.workflow.nodes import process
+from disputes.workflow.langgraph_engine import langgraph_available
+from disputes.workflow.nodes import build_workflow, process, select_engine
 
 
 @pytest.fixture(scope="session")
@@ -379,3 +380,102 @@ def _bins(values, edges):
             index += 1
         counter[str(index)] += 1
     return counter
+
+
+# --- the two engines --------------------------------------------------------
+
+needs_langgraph = pytest.mark.skipif(not langgraph_available(), reason="langgraph is not installed")
+
+
+@needs_langgraph
+def test_langgraph_is_the_default_engine():
+    assert select_engine("auto") == "langgraph"
+    assert build_workflow().engine == "langgraph"
+
+
+@needs_langgraph
+def test_both_engines_execute_the_same_graph_identically(dispute):
+    """The conformance test.
+
+    One declared topology, two executors. If LangGraph's reducers, conditional
+    edges and recursion bound mean what the reference walker means, then the
+    path, the audit trail, the letter and the routing decision are the same
+    object. Any divergence is a misunderstanding of the framework, and this is
+    where it surfaces rather than in production.
+    """
+    reference = build_workflow(engine="reference").invoke({"complaint": dispute})
+    langgraph = build_workflow(engine="langgraph").invoke({"complaint": dispute})
+
+    assert reference["_path"] == langgraph["_path"]
+    assert reference["draft"].text == langgraph["draft"].text
+    assert reference["outcome"] == langgraph["outcome"]
+    assert reference["deadlines"] == langgraph["deadlines"]
+    assert reference["verification"].passed == langgraph["verification"].passed
+
+    left, right = audit_trail(reference), audit_trail(langgraph)
+    assert [c["node"] for c in left] == [c["node"] for c in right]
+    assert [c["next"] for c in left] == [c["next"] for c in right]
+    assert [c["added"] for c in left] == [c["added"] for c in right]
+
+
+@needs_langgraph
+def test_the_escape_path_waives_required_stages_on_langgraph_too():
+    state = build_workflow(engine="langgraph").invoke(
+        {"complaint": {"complaint_id": "T-0002", "issue": None, "narrative": ""}})
+    assert state["_path"] == ["intake", "classify", "unclassifiable"]
+    assert state["outcome"]["requires_human_approval"]
+
+
+@needs_langgraph
+def test_the_checkpointer_records_every_super_step(dispute):
+    workflow = build_workflow(engine="langgraph")
+    state = workflow.invoke({"complaint": dispute})
+
+    # The framework's own record, not a list this codebase maintains.
+    history = workflow.state_history(state["_thread_id"])
+    assert history[-1]["path"] == state["_path"]
+
+    # Every stage appears as pending in some checkpoint before it completes,
+    # so the record is a replayable sequence rather than a final summary.
+    pending = [n for h in history for n in h["next"]]
+    assert "compute_deadlines" in pending and "verify" in pending
+    assert [h["completed"] for h in history if h["completed"]][-1] == "route"
+
+
+@needs_langgraph
+def test_the_human_gate_pauses_before_routing_and_resumes(dispute):
+    """An interrupt is a durable pause, which is why it needs the checkpointer.
+
+    The approver reads the finished draft and its verification - the thing
+    being approved - rather than a queue assignment already made for them.
+    """
+    workflow = build_workflow(engine="langgraph", human_in_the_loop=True)
+    paused = workflow.invoke({"complaint": dispute})
+
+    assert workflow.interrupted(paused["_thread_id"])
+    assert "route" not in paused["_path"]
+    assert paused["draft"].text                      # the draft exists to be read
+    assert "outcome" not in paused                   # but nothing has been routed
+
+    resumed = workflow.resume(paused["_thread_id"])
+    assert resumed["_path"][-1] == "route"
+    assert resumed["outcome"]["complaint_id"] == "T-0001"
+
+
+@needs_langgraph
+def test_the_verify_cycle_is_bounded_by_the_recursion_limit(dispute, monkeypatch):
+    """A verifier that never passes must terminate, not spin."""
+    import disputes.workflow.nodes as nodes
+
+    monkeypatch.setattr(nodes, "MAX_DRAFT_ATTEMPTS", 10_000)
+    workflow = build_workflow(engine="langgraph")
+    workflow.spec.max_steps = 6                      # below one full pass
+
+    with pytest.raises(WorkflowError, match="exceeded max_steps"):
+        workflow.invoke({"complaint": dispute})
+
+
+@needs_langgraph
+def test_the_graph_renders_from_langgraph_itself():
+    mermaid = build_workflow(engine="langgraph").to_mermaid()
+    assert "compute_deadlines" in mermaid and "unclassifiable" in mermaid

@@ -67,7 +67,7 @@ def cmd_dispute(args) -> int:
             "provisional_credit_given": args.provisional_credit,
         }
 
-    state = process(complaint)
+    state = process(complaint, engine=getattr(args, "engine", "auto"))
     print(state["draft"].text if state.get("draft") else json.dumps(state.get("outcome"), indent=2))
     print("\n--- verification ---")
     verification = state.get("verification")
@@ -75,7 +75,7 @@ def cmd_dispute(args) -> int:
     print("--- deadlines ---")
     print(json.dumps(state.get("deadlines", {}), indent=2))
     if args.trace:
-        print("--- audit trail ---")
+        print(f"--- audit trail ({state.get('_engine')} engine) ---")
         print(json.dumps(audit_trail(state), indent=2))
     return 0
 
@@ -196,9 +196,17 @@ def cmd_serve(args) -> int:
 
 
 def cmd_workflow(args) -> int:
+    """Render the graph.
+
+    On the LangGraph engine this is LangGraph's own renderer walking the
+    compiled graph, so what is printed is the thing that will execute rather
+    than a drawing of it maintained alongside.
+    """
     from .workflow.nodes import build_workflow
 
-    print(build_workflow().to_mermaid())
+    workflow = build_workflow(engine=getattr(args, "engine", "auto"))
+    print(f"%% engine: {workflow.engine}")
+    print(workflow.to_mermaid())
     return 0
 
 
@@ -231,6 +239,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--point-of-sale", action="store_true")
     p.add_argument("--provisional-credit", action="store_true")
     p.add_argument("--trace", action="store_true")
+    p.add_argument("--engine", choices=["auto", "langgraph", "reference"], default="auto",
+                   help="execution engine; auto picks langgraph when installed")
     p.set_defaults(func=cmd_dispute)
 
     p = sub.add_parser("regulations", help="query the regulation corpus")
@@ -271,6 +281,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=cmd_serve)
 
     p = sub.add_parser("workflow", help="print the workflow as mermaid")
+    p.add_argument("--engine", choices=["auto", "langgraph", "reference"], default="auto",
+                   help="execution engine; auto picks langgraph when installed")
     p.set_defaults(func=cmd_workflow)
     return parser
 

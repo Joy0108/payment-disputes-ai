@@ -48,6 +48,15 @@ jobs:
       - name: Tests
         run: pytest
 
+      # The workflow executes on LangGraph. The dependency-free walker is the
+      # control in the conformance test, so CI asserts the property directly:
+      # one declared topology, two executors, the same letter.
+      - name: Both engines produce the same letter
+        run: |
+          python -m disputes.cli dispute --engine langgraph --amount 500 --transaction-date 2024-10-28 --statement-date 2024-11-01 --notice-date 2024-11-20 > /tmp/langgraph.txt
+          python -m disputes.cli dispute --engine reference --amount 500 --transaction-date 2024-10-28 --statement-date 2024-11-01 --notice-date 2024-11-20 > /tmp/reference.txt
+          diff /tmp/langgraph.txt /tmp/reference.txt
+
       - name: Train
         run: python -m disputes.cli train
 
