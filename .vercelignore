@@ -1,0 +1,18 @@
+# The bronze/silver/gold layers are 55 MB and are build inputs for training,
+# not for serving. The function reads data/regulations/sections.json only,
+# which vercel.json includes explicitly.
+data/raw
+data/silver
+data/gold
+data/golden
+data/manifest.json
+
+artifacts
+reports
+tests
+scripts
+deploy
+docker-compose.yml
+Dockerfile
+Makefile
+.github

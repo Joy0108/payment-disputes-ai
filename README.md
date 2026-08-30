@@ -350,6 +350,37 @@ was never a gate.
 
 ---
 
+## Deploying the API
+
+`deploy/` holds the real target: two workloads from one image, the worker
+autoscaled on queue depth, and the shadow and drift CronJobs.
+
+`api/index.py` and `vercel.json` add a serverless deployment for the
+**synchronous** endpoint, which is useful as a live demo. Three things about it
+are worth stating rather than discovering:
+
+* **It runs the reference engine, not LangGraph.** Both execute the same
+  declared topology and the conformance test asserts they produce identical
+  output, so this costs nothing behaviourally and keeps `langchain-core`,
+  `langsmith` and the rest out of a size-limited bundle. `requirements.txt` is
+  correspondingly slim - numpy, FastAPI, pydantic - because scikit-learn and
+  langgraph are both imported lazily and the serving path reaches neither.
+* **It serves without trained models.** The estimator artifacts are build
+  outputs and are not committed. `/health` reports `models_loaded: false`, and
+  the rules engine, validation, retrieval, drafting and the citation verifier
+  all work from a stated issue. The issue classifier and risk scores are what
+  is missing.
+* **`POST /disputes/batch` is not durable there.** The queue writes to `/tmp`,
+  which is per-invocation and not shared between instances, so a job enqueued
+  by one request is invisible to the next. The queue is designed for the
+  long-lived worker in `deploy/`; on serverless, use `POST /disputes`.
+
+Training, the cron jobs and the batch worker have no serverless equivalent.
+Anything beyond the synchronous demo wants the Kubernetes manifests, or a host
+with a persistent disk and a background process.
+
+---
+
 ## Commands
 
 ```

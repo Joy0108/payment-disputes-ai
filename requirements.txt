@@ -1,0 +1,12 @@
+# Runtime dependencies for the Vercel serverless function only.
+#
+# Deliberately not the project's full dependency set. The serving path imports
+# numpy, FastAPI and pydantic and nothing else: scikit-learn is imported lazily
+# inside Predictors.from_artifacts(), and langgraph lazily inside the langgraph
+# engine, which api/index.py does not select. Installing either would add
+# ~200 MB to a bundle that has a size limit, to load code no request touches.
+#
+# The full set for development and training is in pyproject.toml.
+fastapi>=0.110
+pydantic>=2.6
+numpy>=1.24
