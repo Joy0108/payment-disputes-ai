@@ -23,13 +23,13 @@ tracking = ["mlflow>=2.12", "evidently>=0.4"]
 [project.scripts]
 disputes = "disputes.cli:main"
 
-# Vercel resolves the ASGI application from here. The file also sits at
-# api/index.py, which is one of the paths Vercel scans by default, but the
-# scan is a fallback: naming the entrypoint explicitly means detection does
-# not depend on which builder version runs or on how the project root is
-# configured.
+# Vercel resolves the ASGI application from here, in "module:object" form.
+# The file also sits at api/index.py, which is one of the paths Vercel scans by
+# default, but the scan is a fallback: naming the entrypoint explicitly means
+# detection does not depend on which builder version runs or on how the project
+# root is configured.
 [tool.vercel]
-entrypoint = "api/index.py"
+entrypoint = "api.index:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
